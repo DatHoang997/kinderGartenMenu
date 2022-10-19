@@ -33,8 +33,13 @@ class AdapterList(private val mList: List<ItemsViewModel>) : RecyclerView.Adapte
             holder.txt_name.setBackgroundResource(R.color.bg_item)
             holder.txt_status.setBackgroundResource(R.color.bg_item)
         }else{
-            holder.txt_stt.text = position.plus(1).toString()
+            holder.txt_stt.text = position.toString()
             holder.txt_name.text = itemsViewModel.name
+             if(itemsViewModel.status){
+                 holder.txt_status.text = "Có thể"
+             }else{
+                 holder.txt_status.text = "Không thể"
+             }
         }
 
     }

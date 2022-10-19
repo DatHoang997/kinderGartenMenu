@@ -15,7 +15,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             val bundle = bundleOf("some_int" to 0)
             supportFragmentManager.commit {
                 setReorderingAllowed(true)
-                add<FragmentOrder>(R.id.fragment_container_view, args = bundle)
+                add<MainFragment>(R.id.fragment_container_view, args = bundle)
             }
         }
     }
