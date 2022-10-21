@@ -5,23 +5,23 @@
     android:layout_height="match_parent"
     android:background="@color/white">
     <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabLayout_multimedia"
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:tabIndicatorColor="@color/active"
-        app:tabMode="scrollable"
+        app:tabIndicatorColor="#D60A0B"
+        app:tabMode="fixed"
         app:tabTextAppearance="@style/MyTabLayoutTextAppearance" />
 
     <androidx.viewpager2.widget.ViewPager2
-        android:id="@+id/tabMultimedia_viewpager"
+        android:id="@+id/viewpager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tabLayout_multimedia" />
+        app:layout_constraintTop_toBottomOf="@+id/tabLayout" />
 </androidx.constraintlayout.widget.ConstraintLayout>

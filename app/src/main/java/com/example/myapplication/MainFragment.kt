@@ -17,7 +17,7 @@ class MainFragment  : Fragment(R.layout.fragment_main){
              val bundle = bundleOf("some_int" to 0)
              requireActivity().supportFragmentManager.commit {
                  setReorderingAllowed(true)
-                 add<FragmentOrder>(R.id.fragment_container_view, args = bundle)
+                 add<DetailFragment>(R.id.fragment_container_view, args = bundle)
              }
          }
     }

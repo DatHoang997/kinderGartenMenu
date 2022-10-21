@@ -1,79 +1,130 @@
 package com.example.myapplication
 
-import ItemsViewModel
+import DataDetail
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.CheckBox
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.os.bundleOf
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.add
+import androidx.fragment.app.commit
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.adapter.AdapterList
+import com.example.myapplication.adapter.AdapterMenu
+import com.example.myapplication.viewcustom.UserSelectSpinner
 
-class FragmentMenu : Fragment(R.layout.fragment_order) {
-    val data = ArrayList<ItemsViewModel>()
-    var adapter : AdapterList?= null
+class FragmentMenu : Fragment(R.layout.fragment_order),OnClickItem {
+    val data  : MutableList<DataDetail> = mutableListOf()
+    var adapter2 : AdapterMenu?= null
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val someInt = requireArguments().getInt("some_int")
         val recyclerview = view.findViewById<RecyclerView>(R.id.rcv_list)
         val txt_add_food = view.findViewById<AppCompatTextView>(R.id.txt_add_food)
-        recyclerview.layoutManager = LinearLayoutManager(activity)
-        data.add(ItemsViewModel(false, "Title"))
-        data.add(ItemsViewModel(true, "Thịt kho"))
-        data.add(ItemsViewModel(false, "Cá rán"))
-        data.add(ItemsViewModel(true, "Trứng luộc"))
-        data.add(ItemsViewModel(false, "Bánh mỳ"))
+        txt_add_food.text =" Thêm Menu"
 
-        adapter = AdapterList(data)
-        recyclerview.adapter = adapter
+        recyclerview.layoutManager = LinearLayoutManager(activity)
+        data.add(DataDetail(false, "Title",""))
+        data.add(DataDetail(true, "Sáng","Ngon","01/09/2022"))
+        data.add(DataDetail(false, "Trưa","Ngon","01/09/2022"))
+        data.add(DataDetail(true, "Chiều","Ngon","01/09/2022"))
+
+
+        adapter2 = AdapterMenu(data,this)
+        recyclerview.adapter = adapter2
         txt_add_food.setOnClickListener {
-            showDialog()
+            showDialog(1,0)
         }
     }
 
 
-    private fun showDialog() {
 
-        val view = LayoutInflater.from(requireActivity()).inflate(R.layout.dialog_add_food, null)
+
+    @SuppressLint("MissingInflatedId")
+    private fun showDialog(typeDialog: Int,position: Int, item: DataDetail?=null) {
+
+        val view = LayoutInflater.from(requireActivity()).inflate(R.layout.fragment_detail_menu, null)
         val dialogBuilder = AlertDialog.Builder(requireActivity(), R.style.StyleDialogUpdateVersion)
         dialogBuilder.setCancelable(true)
         val dialog = dialogBuilder.create()
-        var  btn_del = view.findViewById<AppCompatButton>(R.id.btn_del_dialog)
-        var  btn_save_dialog = view.findViewById<AppCompatButton>(R.id.btn_save_dialog)
-        var  edt_name_add = view.findViewById<AppCompatEditText>(R.id.edt_name_add)
-        var  edt_name_des = view.findViewById<AppCompatEditText>(R.id.edt_name_des)
+          var spinner = view.findViewById<UserSelectSpinner>(R.id.spinner)
+        var  btn_del = view.findViewById<AppCompatButton>(R.id.btn_del_dialog_menu)
+        var  btn_save_dialog = view.findViewById<AppCompatButton>(R.id.btn_save_dialog_menu)
+        var  edt_name_ad1 = view.findViewById<AppCompatEditText>(R.id.edt_name_add_1)
+        var  cb_menu = view.findViewById<CheckBox>(R.id.cb_menu_add)
+        var  txt_name_date_value = view.findViewById<AppCompatTextView>(R.id.txt_name_date_value)
+        val adapter = ArrayAdapter.createFromResource(
+            requireActivity(),
+            R.array.state_date,
+            R.layout.item_default_show_tone
+        )
+        adapter.setDropDownViewResource(R.layout.item_choose_tone)
+        spinner = view.findViewById(R.id.spinner)
+        spinner?.adapter = adapter
+        var position = 0
+        spinner.setOnSelectSpinnerListener(object :
+            UserSelectSpinner.OnSelectSpinnerListener {
+
+            override fun onOpenSelectMenu() {}
+
+            override fun onItemSelectByUser(pos: Int) {
+                position = pos
+            }
+        })
 
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.setView(view)
         dialog.setCancelable(true)
         dialog.show()
-        btn_del?.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        btn_save_dialog?.setOnClickListener {
-            if(edt_name_add?.text.toString().isNullOrBlank()){
-                Toast.makeText(requireActivity(), "Vui lòng nhập tên món ăn", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
+        when (typeDialog) {
+            1 -> {
+                btn_del.hide()
             }
-            if(edt_name_des?.text.toString().isNullOrBlank()){
-                Toast.makeText(requireActivity(), "Vui lòng nhập mô tả", Toast.LENGTH_LONG).show()
-                return@setOnClickListener
+            2 -> {
+
             }
-            data.add(ItemsViewModel(true, edt_name_add.text.toString()))
-            adapter?.notifyDataSetChanged()
-            dialog.dismiss()
-
         }
+         btn_save_dialog.setOnClickListener {
 
+             if(edt_name_ad1?.text.toString().isNullOrBlank()){
+                 Toast.makeText(requireActivity(), "Vui lòng nhập ít nhất 1 món ăn", Toast.LENGTH_LONG).show()
+                 return@setOnClickListener
+             }
+             var buoi = ""
+             when (position) {
+                 0 -> {
+                     buoi = " Buổi sáng"
+                 }
+                 1 -> {
+                     buoi = " Buổi trưa"
+                 }
+                 2 -> {
+                     buoi = " Buổi chiều"
+                 }
+             }
+             data.add(DataDetail(cb_menu.isChecked,buoi,""
+                 ,txt_name_date_value.text.toString()))
+             adapter2?.notifyDataSetChanged()
+             dialog.dismiss()
+         }
+
+    }
+
+    override fun clickItem(item: DataDetail, position: Int) {
 
     }
 }

@@ -1,12 +1,14 @@
 package com.example.myapplication
 
-import ItemsViewModel
-import android.content.Context
+import DataDetail
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.CheckBox
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.AppCompatButton
@@ -17,31 +19,31 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.adapter.AdapterList
 
-class FragmentOrder : Fragment(R.layout.fragment_order) {
-    val data = ArrayList<ItemsViewModel>()
+class FragmentOrder : Fragment(R.layout.fragment_order),OnClickItem {
+    val data  : MutableList<DataDetail> = mutableListOf()
     var adapter :AdapterList?= null
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        val someInt = requireArguments().getInt("some_int")
         val recyclerview = view.findViewById<RecyclerView>(R.id.rcv_list)
         val txt_add_food = view.findViewById<AppCompatTextView>(R.id.txt_add_food)
         recyclerview.layoutManager = LinearLayoutManager(activity)
-        data.add(ItemsViewModel(false, "Title"))
-        data.add(ItemsViewModel(true, "Thịt kho"))
-        data.add(ItemsViewModel(false, "Cá rán"))
-        data.add(ItemsViewModel(true, "Trứng luộc"))
-        data.add(ItemsViewModel(false, "Bánh mỳ"))
+        data.add(DataDetail(false, "Title",""))
+        data.add(DataDetail(true, "Thịt kho","Ngon"))
+        data.add(DataDetail(false, "Cá rán","Ngon"))
+        data.add(DataDetail(true, "Trứng luộc","Ngon"))
+        data.add(DataDetail(false, "Bánh mỳ","Ngon"))
 
-        adapter = AdapterList(data)
+        adapter = AdapterList(data,this)
         recyclerview.adapter = adapter
         txt_add_food.setOnClickListener {
-            showDialog()
+            showDialog(1,0)
         }
     }
 
 
-    private fun showDialog() {
+    @SuppressLint("MissingInflatedId")
+    private fun showDialog(typeDialog: Int,position: Int, item: DataDetail?=null) {
 
         val view = LayoutInflater.from(requireActivity()).inflate(R.layout.dialog_add_food, null)
         val dialogBuilder = AlertDialog.Builder(requireActivity(), R.style.StyleDialogUpdateVersion)
@@ -51,13 +53,28 @@ class FragmentOrder : Fragment(R.layout.fragment_order) {
          var  btn_save_dialog = view.findViewById<AppCompatButton>(R.id.btn_save_dialog)
          var  edt_name_add = view.findViewById<AppCompatEditText>(R.id.edt_name_add)
          var  edt_name_des = view.findViewById<AppCompatEditText>(R.id.edt_name_des)
+         var  cb_status = view.findViewById<CheckBox>(R.id.cb_status)
 
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         dialog.setView(view)
         dialog.setCancelable(true)
         dialog.show()
         btn_del?.setOnClickListener {
+            data.removeAt(position)
+            adapter?.notifyDataSetChanged()
             dialog.dismiss()
+        }
+
+        when (typeDialog) {
+            1 -> {
+                btn_del.hide()
+            }
+            2 -> {
+                cb_status.isChecked= item?.status == true
+                edt_name_add.setText(item?.name, TextView.BufferType.EDITABLE)
+                edt_name_des.setText(item?.des, TextView.BufferType.EDITABLE)
+
+            }
         }
 
         btn_save_dialog?.setOnClickListener {
@@ -69,12 +86,18 @@ class FragmentOrder : Fragment(R.layout.fragment_order) {
                 Toast.makeText(requireActivity(), "Vui lòng nhập mô tả", Toast.LENGTH_LONG).show()
                 return@setOnClickListener
             }
-            data.add(ItemsViewModel(true, edt_name_add.text.toString()))
+            if(typeDialog==1){
+                data.add(DataDetail(cb_status.isChecked, edt_name_add.text.toString(),edt_name_des.text.toString()))
+            }else{
+                data.set(position,DataDetail(cb_status.isChecked, edt_name_add.text.toString(),edt_name_des.text.toString()))
+            }
+
             adapter?.notifyDataSetChanged()
             dialog.dismiss()
-
         }
+    }
 
-
+    override fun clickItem(item: DataDetail, position: Int) {
+        showDialog(2,position,item)
     }
 }

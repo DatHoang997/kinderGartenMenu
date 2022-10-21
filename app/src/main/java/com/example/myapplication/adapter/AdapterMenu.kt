@@ -11,7 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.myapplication.OnClickItem
 import com.example.myapplication.R
 
-class AdapterList(private val mList: List<DataDetail>, val onClickItem: OnClickItem) : RecyclerView.Adapter<AdapterList.ViewHolder>() {
+class AdapterMenu(private val mList: List<DataDetail>, val onClickItem: OnClickItem)
+    : RecyclerView.Adapter<AdapterMenu.ViewHolder>() {
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,14 +33,12 @@ class AdapterList(private val mList: List<DataDetail>, val onClickItem: OnClickI
             holder.txt_stt.setBackgroundResource(R.color.bg_item)
             holder.txt_name.setBackgroundResource(R.color.bg_item)
             holder.txt_status.setBackgroundResource(R.color.bg_item)
+            holder.txt_name.text= "Bữa ăn"
+            holder.txt_status.text= "Ngày"
         }else{
             holder.txt_stt.text = position.toString()
             holder.txt_name.text = itemsViewModel.name
-             if(itemsViewModel.status){
-                 holder.txt_status.text = "Sẵn sàng"
-             }else{
-                 holder.txt_status.text = "Không"
-             }
+            holder.txt_status.text = itemsViewModel.date
             holder.root_parent.setOnClickListener {
                 onClickItem.clickItem(itemsViewModel,position)
             }
